@@ -5,5 +5,5 @@
 # Set Up Process
 1. Install Anaconda
 2. Open the Anaconda Prompt and type 'conda install -c anaconda flask'
-3. Install Flask and Bson
+3. Install Flask 
 4. 

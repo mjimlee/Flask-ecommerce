@@ -5,7 +5,9 @@ from flask import session
 import database as db
 import authentication
 import logging
-
+from bson.json_util import loads, dumps
+from flask import make_response
+# import ordermanagement as om
 
 app = Flask(__name__)
 
@@ -31,7 +33,6 @@ def products():
 def productdetails():
     code = request.args.get('code', '')
     product = db.get_product(int(code))
-
     return render_template('productdetails.html', code=code, product=product)
 
 @app.route('/branches')
@@ -98,3 +99,20 @@ def addtocart():
     cart[code]=item
     session["cart"]=cart
     return redirect('/cart')
+
+@app.route('/checkout')
+def checkout():
+    # clear cart in session memory upon checkout
+    om.create_order_from_cart()
+    session.pop("cart",None)
+    return redirect('/ordercomplete')
+
+@app.route('/ordercomplete')
+def ordercomplete():
+    return render_template('ordercomplete.html')
+
+@app.route('/api/products',methods=['GET'])
+def api_get_products():
+    resp = make_response( dumps(db.get_products()) )
+    resp.mimetype = 'application/json'
+    return resp
